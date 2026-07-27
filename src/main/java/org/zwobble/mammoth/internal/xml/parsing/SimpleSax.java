@@ -3,6 +3,8 @@ package org.zwobble.mammoth.internal.xml.parsing;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.zwobble.mammoth.internal.util.PassThroughException;
@@ -33,8 +35,14 @@ class SimpleSax {
         parserFactory.setNamespaceAware(true);
         try {
             parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            try {
+                parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            } catch (SAXNotRecognizedException | SAXNotSupportedException ignored) {
+            }
+            try {
+                parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (SAXNotRecognizedException | SAXNotSupportedException ignored) {
+            }
             SAXParser saxParser = parserFactory.newSAXParser();
             XMLReader xmlReader = saxParser.getXMLReader();
             xmlReader.setContentHandler(new DefaultHandler() {
